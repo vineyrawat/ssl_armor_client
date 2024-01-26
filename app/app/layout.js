@@ -2,6 +2,7 @@ import { Separator } from "@/components/ui/separator"
 import { NavigationRail } from "./components/navigation-rail"
 import { HiOutlineChartBarSquare } from "react-icons/hi2";
 import { HiOutlineCog8Tooth } from "react-icons/hi2";
+import AppHeader from "./components/header";
 
 
 
@@ -28,10 +29,10 @@ export default function AppLayout({ children }) {
     return (
         <>
             <div className="">
-                <div className="flex flex-col lg:flex-row">
+                <div className="flex flex-row">
                     <NavigationRail items={sidebarNavItems} />
                     <div className="flex-1 h-screen overflow-y-scroll">
-                        {/* <Separator className="my-6" /> */}
+                        <AppHeader />
                         <div className="flex-1">{children}</div>
                     </div>
                 </div>

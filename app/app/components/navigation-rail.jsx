@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function NavigationRail({ className, items, ...props }) {
   const pathname = usePathname()
@@ -18,20 +19,29 @@ export function NavigationRail({ className, items, ...props }) {
       {...props}
     >
       {items.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className={cn(
-            buttonVariants({ variant: "ghost" }),
-            pathname === item.href
-              ? "bg-muted hover:bg-muted"
-              : "hover:bg-transparent border hover:underline",
-            "justify-start text-2xl"
-          )}
-        >
-          {item.icon}
-          {/* {item.title} */}
-        </Link>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  pathname === item.href
+                    ? "bg-muted hover:bg-muted"
+                    : "hover:bg-transparent border hover:underline",
+                  "justify-start text-2xl"
+                )}
+              >
+                {item.icon}
+                {/* {item.title} */}
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side={"right"}>
+              <p>{item.title}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ))}
     </nav>
   )
