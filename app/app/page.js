@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link"
+import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PopoverTrigger, PopoverContent, Popover } from "@/components/ui/popover"
@@ -47,13 +50,38 @@ export default function AppDashboard() {
                             </Button>
                         </div>
                     </div>
-                    <div className="border rounded-lg overflow-hidden grid gap-4 lg:gap-px lg:bg-gray-100">
-                        <ServerListItem variant="expiring" />
-                        <ServerListItem variant="valid" />
-                        <ServerListItem variant="expired" />
-                    </div>
+                    <ServerList />
                 </div>
             </main>
+        </div>
+    )
+}
+
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import useServers from "../hooks/use-servers"
+
+
+function ServerList() {
+    const { error, isLoading, servers, retry } = useServers()
+
+    console.log("SERVERS: ", servers)
+
+    return (
+        <div className="border rounded-lg overflow-hidden grid gap-4 lg:gap-px lg:bg-gray-100">
+            {(isLoading ? <div className="p-5 flex items-center justify-center">
+                <AiOutlineLoading3Quarters className="animate animate-spin" size={25} />
+            </div> :
+                (error ? <div className="p-5 gap-2 flex flex-col items-center justify-center">
+                    <p>{error}</p>
+                    <Button onClick={retry} variant="outline" size="sm">Retry</Button>
+                </div> : <>
+                    {servers.map((server) => <ServerListItem key={server.creation_time} server={server} variant="expiring" />
+                    )
+                        // < ServerListItem variant="valid" />
+                        // <ServerListItem variant="expired" />
+                    }
+                </>)
+            )}
         </div>
     )
 }
