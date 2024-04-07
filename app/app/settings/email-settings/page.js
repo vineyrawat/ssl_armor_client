@@ -1,11 +1,4 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/ldQa5Tinygy
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { CardContent, Card, CardTitle, CardDescription, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -30,18 +23,6 @@ export default function EmailSettings() {
                             <Label htmlFor="airplane-mode">Enable Email Notifications</Label>
                         </div>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-2">
-                            <Label className="text-sm" htmlFor="recipients">
-                                Recipients
-                            </Label>
-                            <p className="text-sm leading-none text-gray-500 dark:text-gray-400">
-                                Add email addresses to receive notifications. Use commas to separate multiple addresses.
-                            </p>
-                            <Textarea className="min-h-[100px]" id="recipients" placeholder="Email addresses" />
-                        </div>
-
-                    </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
@@ -51,18 +32,15 @@ export default function EmailSettings() {
                     <CardContent className="space-y-6">
                         <div className="space-y-2">
                             <Label className="text-sm" htmlFor="sender-email">
+                                Sender Name
+                            </Label>
+                            <Input id="sender-name" placeholder="Your name" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-sm" htmlFor="sender-email">
                                 Sender Email
                             </Label>
                             <Input id="sender-email" placeholder="Your sender email" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-sm" htmlFor="smtp-settings">
-                                SMTP/IMAP Settings
-                            </Label>
-                            <p className="text-sm leading-none text-gray-500 dark:text-gray-400">
-                                Configure your SMTP/IMAP settings for sending and receiving emails.
-                            </p>
-                            <Textarea className="min-h-[100px]" id="smtp-settings" placeholder="SMTP/IMAP settings" />
                         </div>
                         <div className="space-y-2">
                             <Label className="text-sm" htmlFor="smtp-username">
@@ -70,29 +48,32 @@ export default function EmailSettings() {
                             </Label>
                             <Input id="smtp-username" placeholder="Your SMTP username" />
                         </div>
+                        <div className="flex items-center space-x-2 space-y-2">
+                            <Checkbox id="use-tls" />
+                            <label
+                                htmlFor="use-tls"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                                Use TLS
+                            </label>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-sm" htmlFor="smtp-port">
+                                Port
+                            </Label>
+                            <Input id="smtp-password" placeholder="Enter PORT" type="number" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-sm" htmlFor="smtp-outgoing-server">
+                                Outgoing Server
+                            </Label>
+                            <Input id="smtp-outgoing-server" placeholder="e.g. smtp.google.com" type="text" />
+                        </div>
                         <div className="space-y-2">
                             <Label className="text-sm" htmlFor="smtp-password">
                                 SMTP Password
                             </Label>
                             <Input id="smtp-password" placeholder="Your SMTP password" type="password" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-sm" htmlFor="imap-server">
-                                IMAP Server
-                            </Label>
-                            <Input id="imap-server" placeholder="IMAP server address" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-sm" htmlFor="imap-username">
-                                IMAP Username
-                            </Label>
-                            <Input id="imap-username" placeholder="Your IMAP username" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-sm" htmlFor="imap-password">
-                                IMAP Password
-                            </Label>
-                            <Input id="imap-password" placeholder="Your IMAP password" type="password" />
                         </div>
                     </CardContent>
                 </Card>

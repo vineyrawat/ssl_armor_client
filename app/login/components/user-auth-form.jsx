@@ -4,18 +4,28 @@ import React from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { signIn } from "next-auth/react"
 
 
 export function UserAuthForm({ className, ...props }) {
   const [isLoading, setIsLoading] = React.useState(false)
 
   async function onSubmit(event) {
-    event.preventDefault()
     setIsLoading(true)
-
-    setTimeout(() => {
+    event.preventDefault()
+    try {
+      const res = await signIn("Credentials", {
+        redirect: false,
+        email: event.target.email.value,
+        password: event.target.password.value,
+      })
+      console.log("LOGIN RES: ", res)
+    } catch (e) {
+      console.log(e)
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
+
   }
 
   return (
@@ -29,7 +39,7 @@ export function UserAuthForm({ className, ...props }) {
             <Input
               id="email"
               placeholder="name@example.com"
-              type="email"
+              type="text"
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect="off"
@@ -67,12 +77,12 @@ export function UserAuthForm({ className, ...props }) {
         </div>
       </div> */}
       {/* <Button variant="outline" type="button" disabled={isLoading}> */}
-        {/* {isLoading ? (
+      {/* {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
           <Icons.gitHub className="mr-2 h-4 w-4" />
         )}{" "} */}
-        {/* Reset Password */}
+      {/* Reset Password */}
       {/* </Button> */}
     </div>
   )

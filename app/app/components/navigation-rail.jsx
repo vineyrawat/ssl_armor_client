@@ -13,13 +13,13 @@ export function NavigationRail({ className, items, ...props }) {
   return (
     <nav
       className={cn(
-        "flex w-min flex-col items-center p-2 border h-screen space-y-2",
+        "flex w-full items-center border-b",
         className
       )}
       {...props}
     >
       {items.map((item) => (
-        <TooltipProvider>
+        <TooltipProvider key={item.href}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
@@ -27,14 +27,16 @@ export function NavigationRail({ className, items, ...props }) {
                 href={item.href}
                 className={cn(
                   buttonVariants({ variant: "ghost" }),
-                  pathname === item.href
-                    ? "bg-muted hover:bg-muted"
-                    : "hover:bg-transparent border hover:underline",
-                  "justify-start text-2xl"
+                  pathname == item.href
+                    ? "border-b border-primary bg-muted"
+                    : "hover:bg-transparent hover:underline",
+                  "justify-start rounded-none"
                 )}
               >
-                {item.icon}
-                {/* {item.title} */}
+                <div className="text-2xl">
+                  {item.icon}
+                </div>
+                {item.title}
               </Link>
             </TooltipTrigger>
             <TooltipContent side={"right"}>

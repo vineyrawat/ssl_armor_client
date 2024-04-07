@@ -1,6 +1,8 @@
+"use client";
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
+import { signOut } from "next-auth/react";
 
 export default function AppHeader() {
     return (
@@ -22,7 +24,7 @@ export default function AppHeader() {
                     <DropdownMenuContent>
                         <DropdownMenuItem>My Account</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Logout</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => signOut({ callbackUrl: "/" })}>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

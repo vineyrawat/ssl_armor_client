@@ -1,12 +1,26 @@
+"use client"
+
 import Image from "next/image"
 import { UserAuthForm } from "./components/user-auth-form"
+import { useSession } from "next-auth/react"
+import { useRouter } from 'next/navigation'
+import React from "react"
 
-export const metadata = {
-    title: "Authentication",
-    description: "Authentication forms built using the components.",
-}
 
 export default function AuthenticationPage() {
+    const { data: session } = useSession()
+    console.log("SESSION: ", session)
+    const router = useRouter()
+
+    console.log(router)
+
+    React.useEffect(() => {
+        if (session) {
+            router.replace("/app")
+        }
+    }, [session])
+
+
     return (
         <>
             <div className="md:hidden">

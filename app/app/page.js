@@ -7,8 +7,14 @@ import { Input } from "@/components/ui/input"
 import { PopoverTrigger, PopoverContent, Popover } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { Separator } from "@/components/ui/separator"
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import useServers from "../hooks/use-servers"
 import ServerListItem from "./components/server-list-item"
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Label } from "@/components/ui/label"
+import { getSession } from "next-auth/react"
+import { BASE_URL } from "../constants"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function AppDashboard() {
     return (
@@ -22,7 +28,7 @@ export default function AppDashboard() {
                         <Input className="bg-white md:flex-1 dark:bg-gray-950" placeholder="Search servers..." type="search" />
                         <div className="flex items-center gap-4">
                             <Popover>
-                                <PopoverTrigger asChild>
+                                {/* <PopoverTrigger asChild>
                                     <Button variant="outline">
                                         <CalendarClockIcon className="mr-2 h-4 w-4 shrink-0" />
                                         Select Date
@@ -30,9 +36,9 @@ export default function AppDashboard() {
                                 </PopoverTrigger>
                                 <PopoverContent align="end" className="w-auto p-0">
                                     <Calendar mode="range" numberOfMonths={2} />
-                                </PopoverContent>
+                                </PopoverContent> */}
                             </Popover>
-                            <DropdownMenu>
+                            {/* <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline">
                                         Status
@@ -44,10 +50,8 @@ export default function AppDashboard() {
                                     <DropdownMenuCheckboxItem>Expired</DropdownMenuCheckboxItem>
                                     <DropdownMenuCheckboxItem>Valid</DropdownMenuCheckboxItem>
                                 </DropdownMenuContent>
-                            </DropdownMenu>
-                            <Button size="sm">
-                                Add Server
-                            </Button>
+                            </DropdownMenu> */}
+                            <AddServer />
                         </div>
                     </div>
                     <ServerList />
@@ -57,14 +61,136 @@ export default function AppDashboard() {
     )
 }
 
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import useServers from "../hooks/use-servers"
+
+function AddServer() {
+    const [isAddingServer, setIsAddingServer] = React.useState(false)
+    const [serverName, setServerName] = React.useState("")
+    const { toast } = useToast()
+    const [serverDomain, setServerDomain] = React.useState("")
+
+    const handleAddServer = async () => {
+        try {
+            setIsAddingServer(true)
+            const session = await getSession()
+            const jwt = session?.jwt ?? ""
+            const res = await fetch(BASE_URL + "/api/add_server/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `token ${jwt}`
+                },
+                body: JSON.stringify({
+                    name: serverName,
+                    domain: serverDomain
+                })
+            })
+
+
+            if (res.status >= 200 && res.status < 300) {
+                toast({
+                    title: "Server added",
+                    description: "Server added successfully",
+                    duration: 3000,
+                })
+                setServerDomain("")
+                setServerName("")
+            } else {
+                const resJson = await res.json()
+                toast({
+                    title: "Server not added",
+                    description: resJson?.error == "INVALID_ENTRY" ? resJson?.error_message : "Server not added successfully",
+                    variant: "destructive",
+                    duration: 3000,
+                })
+            }
+
+        } catch (e) {
+            toast({
+                title: "Server not added",
+                description: "Server not added successfully",
+                variant: "destructive",
+                duration: 3000,
+
+            })
+        } finally {
+            setIsAddingServer(false)
+        }
+    }
+
+
+    return (
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button size="sm">Add Server</Button>
+            </SheetTrigger>
+            <SheetContent>
+                <SheetHeader>
+                    <SheetTitle>Add Server</SheetTitle>
+                    <SheetDescription>
+                        Add new server.
+                    </SheetDescription>
+                </SheetHeader>
+                <div className="flex flex-col mt-2 gap-5">
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="name">
+                            Name
+                        </Label>
+
+                        <Input value={serverName} id="name" onChange={(e) => setServerName(e.target.value)} type="text" placeholder="Server name" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="domain">
+                            Domain
+                        </Label>
+                        <Input value={serverDomain} id="domain" onChange={(e) => setServerDomain(e.target.value)} type="text" placeholder="example.com" />
+                    </div>
+                </div>
+                <SheetFooter className={"mt-5"}>
+                    <SheetClose asChild>
+                        <Button type="button" variant="outline">Cancel</Button>
+                    </SheetClose>
+                    <Button type="submit" disabled={isAddingServer} onClick={handleAddServer}>Add Server</Button>
+                </SheetFooter>
+            </SheetContent>
+        </Sheet>
+    )
+}
+
 
 
 function ServerList() {
-    const { error, isLoading, servers, retry } = useServers()
+    const { error, isLoading, servers, fetchServers } = useServers()
 
-    console.log("SERVERS: ", servers)
+    React.useEffect(() => {
+        fetchServers()
+    }, [])
+
+
+    if (isLoading) {
+        return (
+            <div className="p-5 gap-2 flex flex-col items-center justify-center">
+                <AiOutlineLoading3Quarters className="animate animate-spin" size={25} />
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="p-5 gap-2 flex flex-col items-center justify-center">
+                <p>{error}</p>
+                <Button onClick={fetchServers} variant="outline" size="sm">Retry</Button>
+            </div>
+        )
+    }
+
+    if (servers.length === 0) {
+        return (
+            <div className="p-5 gap-2 flex flex-col items-center justify-center">
+                <p>No servers found</p>
+                <Button onClick={fetchServers} variant="outline" size="sm">Retry</Button>
+            </div>
+        )
+    }
 
     return (
         <div className="border rounded-lg overflow-hidden grid gap-4 lg:gap-px lg:bg-gray-100">
@@ -73,13 +199,9 @@ function ServerList() {
             </div> :
                 (error ? <div className="p-5 gap-2 flex flex-col items-center justify-center">
                     <p>{error}</p>
-                    <Button onClick={retry} variant="outline" size="sm">Retry</Button>
+                    <Button onClick={fetch} variant="outline" size="sm">Retry</Button>
                 </div> : <>
-                    {servers.map((server) => <ServerListItem key={server.creation_time} server={server} variant="expiring" />
-                    )
-                        // < ServerListItem variant="valid" />
-                        // <ServerListItem variant="expired" />
-                    }
+                    {servers.map((server) => <ServerListItem key={server.creation_time} server={server} />)}
                 </>)
             )}
         </div>
